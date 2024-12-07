@@ -14,77 +14,42 @@ datasource db {
 }
 
 enum Role {
-  MANAGER
-  CHASIER
-}
-
-enum Category {
-  FOOD
-  DRINK
-  SNACK
-}
-
-enum Pay {
-  CASH
-  QRIS
+  Admin
+  User
 }
 
 enum Status {
-  NEW
-  PAID
-  DONE
+  Dipinjam
+  Kembali
 }
 
 model User {
-  id              Int      @id @default(autoincrement())
-  uuid            String   @unique @default("")
-  name            String   @default("")
-  email           String   @unique @default("")
-  password        String   @default("")
-  profile_picture String   @default("")
-  role            Role     @default(CHASIER)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  orderDetail     Order[]
+  id         Int          @id @default(autoincrement())
+  username   String       @unique @default("")
+  password   String       @default("")
+  role       Role         @default(User)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  peminjaman Peminjaman[]
 }
 
-model Menu {
-  id          Int         @id @default(autoincrement())
-  uuid        String      @unique @default("")
-  name        String      @default("")
-  price       Int         @default(0)
-  category    Category    @default(FOOD)
-  picture     String      @default("")
-  description String      @default("") @db.Text
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  orderLists  OrderList[]
+model Barang {
+  id         Int          @id @default(autoincrement())
+  name       String       @default("")
+  category   String       @default("")
+  location   String       @default("")
+  quantity   Int          @default(0)
+  peminjaman Peminjaman[]
 }
 
-model Order {
-  id             Int         @id @default(autoincrement())
-  uuid           String      @unique @default("")
-  customer       String      @default("")
-  table_number   String      @default("")
-  total_price    Int         @default(0)
-  payment_method Pay         @default(CASH)
-  status         Status      @default(NEW)
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  orderLists     OrderList[]
-  User           User?       @relation(fields: [userId], references: [id])
-  userId         Int?
-}
-
-model OrderList {
-  id        Int      @id @default(autoincrement())
-  uuid      String   @default("")
-  quantity  Int      @default(0)
-  note      String   @default("")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Menu      Menu?    @relation(fields: [menuId], references: [id])
-  menuId    Int?
-  Order     Order?   @relation(fields: [orderId], references: [id])
-  orderId   Int?
+model Peminjaman {
+  id_peminjaman Int      @id @default(autoincrement())
+  quantity      Int
+  borrow_date   DateTime @db.Date
+  return_date   DateTime @db.Date
+  status        Status   @default(Dipinjam)
+  id_barang     Int
+  barang        Barang   @relation(fields: [id_barang], references: [id])
+  id_user       Int
+  user          User     @relation(fields: [id_user], references: [id])
 }
